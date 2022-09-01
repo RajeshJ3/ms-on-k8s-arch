@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  products:
+    build: products
+    container_name: products
+
+  orders:
+    build: orders
+    container_name: orders
+    env_file:
+      - .env
+
+  api-server:
+    build: api-server
+    container_name: api_server
+    ports:
+      - 8000:8000

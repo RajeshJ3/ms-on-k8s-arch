@@ -1,0 +1,32 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledJob
+metadata:
+  name: invoice
+spec:
+  jobTargetRef:
+    template:
+      spec:
+        containers:
+          - name: invoice
+            image: rajeshj3/invoice:latest
+            envFrom:
+              - secretRef:
+                  name: credentials
+            resources:
+              limits:
+                memory: "128Mi"
+                cpu: "250m"
+        restartPolicy: Never
+    backoffLimit: 4
+  pollingInterval: 10
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  triggers:
+    - type: redis
+      metadata:
+        address: redis-11161.c302.asia-northeast1-1.gce.cloud.redislabs.com:11161 # Format must be host:port
+        usernameFromEnv: REDIS_USERNAME
+        passwordFromEnv: REDIS_PASSWORD
+        listName: invoice # Required
+        listLength: "1" # Required
+        enableTLS: "false" # optional
